@@ -9,7 +9,7 @@ const db = mysql.createConnection({
     host: 'localhost',
     user: 'giovanna',
     password: 'SENAI123',
-    database: 'login2'
+    database: 'biblioteca'
 });
 
 db.connect((error) => {
@@ -31,10 +31,10 @@ app.get("/cadastro", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-    const username = req.body.usuario;
+    const email = req.body.usuario;
     const password = req.body.senha;
 
-    db.query('SELECT password FROM user WHERE username = ?', [username], (error, results) => {
+    db.query('SELECT password FROM usuario WHERE email = ?', [email], (error, results) => {
         if (error) {
             console.log("Erro na consulta ao banco de dados:", error);
             res.status(500).send("Erro interno do servidor");
@@ -45,35 +45,35 @@ app.post("/login", (req, res) => {
                 res.send("Login bem-sucedido!");
             } else {
                 console.log("Senha incorreta!");
-                res.send("Senha incorreta!");
+                res.redirect('/?error=Senha+incorreta!');
             }
         } else {
             console.log("Usuário não cadastrado!");
-            res.send("Usuário não cadastrado!");
+            res.redirect('/cadastro?error=Usuário+não+cadastrado');
         }
     });
 });
 
 app.post("/cadastro", (req, res) => {
-    const username = req.body.usuario;
+    const nome = req.body.name;
+    const email = req.body.email;
     const password = req.body.senha;
 
-    db.query('SELECT username FROM user WHERE username = ?', [username], (error, results) => {
+    db.query('SELECT email FROM usuario WHERE email = ?', [email], (error, results) => {
         if (error) {
             console.log("Erro na consulta ao banco de dados:", error);
             res.status(500).send("Erro interno do servidor");
         } else if (results.length > 0) {
             console.log("Usuário já existe!");
-            res.send("Usuário já existe!");
+            res.redirect('/?error=Usuário+já+existe');
         } else {
-
-            db.query('INSERT INTO user (username, password) VALUES (?, ?)', [username, password], (error, results) => {
+            db.query('INSERT INTO usuario (nome, email, password) VALUES (?, ?, ?)', [nome, email, password], (error, results) => {
                 if (error) {
                     console.log("Erro ao inserir usuário no banco de dados:", error);
                     res.status(500).send("Erro interno do servidor");
                 } else {
                     console.log("Usuário cadastrado com sucesso!");
-                    res.redirect("/");
+                    res.redirect('/?email=' + encodeURIComponent(email));
                 }
             });
         }
@@ -81,5 +81,5 @@ app.post("/cadastro", (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Servidor rodando no endereço http://localhost:${port}`);
+    console.log(`Servidor rodando no endereço https://localhost:${port}`);
 });

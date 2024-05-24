@@ -1,12 +1,16 @@
-create database login;
+use biblioteca;
 
-use login;
+alter table usuario modify id_usuario int not null auto_increment;
 
-create table user(
-id_user int primary key,
-username varchar(20) not null,
-password varchar(8) not null
-);
+alter table usuario add password varchar(8) not null;
 
-insert into user(id_user, username, password) values 
-(1, 'GiovannaNogueira', 'gi2006');
+insert into usuario(nome, email, password) values 
+('Giovanna', 'gibruna@gmail.com', 'gi2006');
+
+UPDATE usuario SET password = 'lavinia1' WHERE id_usuario=1;
+UPDATE usuario SET password = 'wash123' WHERE id_usuario=2;
+UPDATE usuario SET password = 'helo123' WHERE id_usuario=4;
+UPDATE usuario SET password = 'ju123' WHERE id_usuario=5;
+
+
+
