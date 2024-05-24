@@ -26,6 +26,10 @@ app.get("/", (req, res) => {
     res.sendFile(__dirname + '/login.html');
 });
 
+app.get("/cadastro", (req, res) => {
+    res.sendFile(__dirname + '/cadastro.html');
+});
+
 app.post("/login", (req, res) => {
     const username = req.body.usuario;
     const password = req.body.senha;
@@ -46,6 +50,39 @@ app.post("/login", (req, res) => {
         } else {
             console.log("Usuário não cadastrado!");
             res.send("Usuário não cadastrado!");
+        }
+    });
+});
+
+app.post("/cadastro", (req, res) => {
+    const username = req.body.usuario;
+    const password = req.body.senha;
+    const confirmPassword = req.body.confirmPassword;
+
+    if (password !== confirmPassword) {
+        console.log("As senhas não coincidem!");
+        res.send("As senhas não coincidem!");
+        return;
+    }
+
+    db.query('SELECT username FROM user WHERE username = ?', [username], (error, results) => {
+        if (error) {
+            console.log("Erro na consulta ao banco de dados:", error);
+            res.status(500).send("Erro interno do servidor");
+        } else if (results.length > 0) {
+            console.log("Usuário já existe!");
+            res.send("Usuário já existe!");
+        } else {
+
+            db.query('INSERT INTO user (username, password) VALUES (?, ?)', [username, password], (error, results) => {
+                if (error) {
+                    console.log("Erro ao inserir usuário no banco de dados:", error);
+                    res.status(500).send("Erro interno do servidor");
+                } else {
+                    console.log("Usuário cadastrado com sucesso!");
+                    res.redirect("/");
+                }
+            });
         }
     });
 });
