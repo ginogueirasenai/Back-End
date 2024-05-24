@@ -57,13 +57,6 @@ app.post("/login", (req, res) => {
 app.post("/cadastro", (req, res) => {
     const username = req.body.usuario;
     const password = req.body.senha;
-    const confirmPassword = req.body.confirmPassword;
-
-    if (password !== confirmPassword) {
-        console.log("As senhas não coincidem!");
-        res.send("As senhas não coincidem!");
-        return;
-    }
 
     db.query('SELECT username FROM user WHERE username = ?', [username], (error, results) => {
         if (error) {
